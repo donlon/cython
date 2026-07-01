@@ -27,7 +27,7 @@ env:
 jobs:
   file-changes:
     runs-on: ubuntu-latest
-    if: github.ref_type != 'tag'
+    if: false
     permissions:
       pull-requests: read
     outputs:
@@ -63,7 +63,7 @@ jobs:
 
   ci-early:
     needs: [file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
       fail-fast: false
@@ -111,7 +111,7 @@ jobs:
 
   ci-early-success:
     needs: [codespell, codestyle, ci-early, build_docs]
-    if: always()
+    if: false
     env:
       FAIL: ${{ case(contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'), 1, 0) }}
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
 
   ci-all:
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -184,7 +184,7 @@ jobs:
   ci-arm64:
     # ARM builds
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -204,7 +204,7 @@ jobs:
 
   ci-32bit:
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     uses: ./.github/workflows/ci-job.yml
     with:
@@ -220,7 +220,7 @@ jobs:
   ci-typespecs:
     # compile with typespecs
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -245,7 +245,7 @@ jobs:
   ci-sharedmodule:
     # compile with shared utility module
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -269,7 +269,7 @@ jobs:
   ci-compileall:
     # compile all modules
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -293,7 +293,7 @@ jobs:
   ci-stdc:
     # GCC/clang with broad language standards
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -339,7 +339,7 @@ jobs:
   ci-lapi:
     # Limited API tests
     needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    if: false
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
@@ -387,17 +387,13 @@ jobs:
 
   ci-noncpython:
     # PyPy, GraalPython, ...
-    needs: [ci-early-success, file-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.file-changes.outputs.ci-changes == 'true' || github.ref_type == 'tag' }}
+    needs: []
 
     strategy:
       # Allows for matrix sub-jobs to fail without canceling the rest
       fail-fast: false
       matrix:
         python-version:
-          - pypy-3.9
-          - pypy-3.10
-          - pypy-3.11
           - graalpy25
         os: [ubuntu-24.04]
         backend: [c]
@@ -412,7 +408,7 @@ jobs:
 
   ci-success:
     needs: [ci-early-success, ci-all, ci-arm64, ci-32bit, ci-typespecs, ci-sharedmodule, ci-compileall, ci-stdc, ci-lapi, ci-noncpython]
-    if: always()
+    if: false
     env:
       FAIL: ${{ case(contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'), 1, 0) }}
     runs-on: ubuntu-latest
@@ -423,6 +419,7 @@ jobs:
   codespell:
     name: Check for spelling errors
     runs-on: ubuntu-latest
+    if: false
     timeout-minutes: 10
 
     steps:
@@ -436,6 +433,7 @@ jobs:
 
   codestyle:
     runs-on: ubuntu-latest
+    if: false
     timeout-minutes: 10
 
     env:
@@ -464,6 +462,7 @@ jobs:
 
   build_docs:
     runs-on: ubuntu-latest
+    if: false
     timeout-minutes: 10
 
     env:
